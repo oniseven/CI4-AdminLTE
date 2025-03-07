@@ -41,6 +41,8 @@ php spark setup:datatabse
 
 ## Template Library Usage
 
+Using database in mandatory, because I use model to populate the menu, so make sure you already done the installation section.
+
 ### Details
 - Locations: `app/Libraries`
 - File name: `Template.php`
@@ -103,6 +105,9 @@ class Home extends BaseController
 ----
 
 ### Set Page Title
+- Method: `page_title()`
+
+I bet you dont need an explanation for this method right? come on.. its a freaking page title man, what else should I explain.
 
 ```php
 $template->page_title('Welcome Page');
@@ -111,6 +116,7 @@ $template->page_title('Welcome Page');
 ----
 
 ### Add Custom Page CSS
+- Method: `page_css()`
 
 if you have a custom css for a specific page, you can load it by using this method.
 
@@ -130,6 +136,7 @@ $template->page_css([
 ----
 
 ### Add Custom Page JS
+- Method: `page_js()`
 
 if you have a custom js file for a specific page, you can load it by using this method.
 
@@ -147,3 +154,75 @@ $template->page_js([
 ```
 
 ----
+
+### Plugins
+- Method: `plugins()`
+
+First things first, there are new file in `app\Config` named as `Plugins.php`. (yeah, dont ask me why I name it `Plugins` LOL)
+Its contain list of javascript/jquery library that consist of `css` and `js` property. 
+There are so many 3rd parties libraries that been use in AdminLTE, I only list some of them that I use in this project.
+Feel free to edit it according to you need in you project. Just dont expect me to list all of them for you, ok.
+
+The usage of this method is pretty simple. It only has 1 parameter, it can be string or an array, just in case you need more than one library in one page, which is most likely happen all the time (Duhh). All you have to do just put the property name that you made in `Plugins.php` file.
+
+```php
+$template->plugins('datatables');
+// or
+$template->plugins(['datatable', 'select2']);
+```
+
+----
+
+### Hiding Content Toolbar, Hiding Breadcrums, Hiding Footer, Hiding things
+- Method: `hide_content_toolbar()`, `hide_breadcrums()`, `hide_footer()`, `hide()`
+
+Yes, you read it right, you can hide stuff in here. Magic? No it is not, wake up already.
+I do believe there should be a better way to do this, but I haven't found it yet.
+
+```php
+$template
+  ->hide_content_toolbar()
+  ->hide_breadcrums()
+  ->hide_footer();
+
+$template->hide([
+  'content-toolbar',
+  'breadcrums',
+  'footer'
+]);
+```
+
+----
+
+### Set Custom Class
+
+This methode is use if you want to add a custom or additional class to some specific tags. Access the tag classes data in view by calling `$classes` variable. For now its only accepting `body` tag.
+
+```php
+$template->tag_class("body", "hold-transition login-page");
+```
+
+----
+
+### Examples
+
+```php
+$template->page_title('Welcome');
+$template->plugins('datatables');
+$template->page_js('assets/dist/js/pages/demo.js');
+$template->render('welcome');
+
+// or
+$data = []; // set your data
+$template
+  ->page_title("Welcome")
+  ->plugins(['datatables'])
+  ->page_js("assets/dist/js/pages/demo.js")
+  ->render('welcome', $data);
+
+// or
+$template
+  ->page_title('Login page')
+  ->tag_class('body', 'hold-transition login-page')
+  ->render('login');
+```
