@@ -66,4 +66,4 @@
   <!-- /.card -->
 </div>
 <!-- /.login-box -->
-<?= $this->endSection('content') ?>
+<?= $this->endSection() ?>

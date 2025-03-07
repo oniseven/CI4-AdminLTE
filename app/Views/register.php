@@ -76,4 +76,4 @@
   </div><!-- /.card -->
 </div>
 <!-- /.register-box -->
-<?= $this->endSection('content') ?>
+<?= $this->endSection() ?>

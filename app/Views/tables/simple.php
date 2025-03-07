@@ -694,4 +694,4 @@
   </div>
 </div>
 <!-- /.row -->
-<?=$this->endSection('content')?>
+<?=$this->endSection()?>
