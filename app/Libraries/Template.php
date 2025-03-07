@@ -1,21 +1,23 @@
 <?php
   namespace App\Libraries;
 
+  use App\Types\TemplateInterface;
   use App\Models\MenuModel;
 
-  class Template {
-    public string $title = 'Default Title';
-    public array $css = [];
-    public array $js = [];
-    public array $plugins_css = [];
-    public array $plugins_js = [];
-    public bool $show_content_toolbar = true; 
-    public bool $show_breadcrums = true; 
-    public bool $show_footer = true; 
-    public array $classes = ["body" => ""];
-    public bool $sidebar_collapse = false;
+  class Template implements TemplateInterface {
+    protected string $title = 'Default Title';
+    protected array $css = [];
+    protected array $js = [];
+    protected array $plugins_css = [];
+    protected array $plugins_js = [];
+    protected bool $show_content_toolbar = true; 
+    protected bool $show_breadcrums = true; 
+    protected bool $show_footer = true; 
+    protected array $classes = ["body" => ""];
+    protected bool $sidebar_collapse = false;
 
     private array $allowed_tags = ["body"];
+    private array $list_elements = ["content-toolbar", "breadcrums", "footer"];
 
     /**
      * Function to add page title, default: Default Title
@@ -24,7 +26,7 @@
      * 
      * @return object
      */
-    public function page_title($title) {
+    public function page_title(string $title): object {
       $this->title = $title;
       return $this;
     }
@@ -33,11 +35,11 @@
      * Function to add page css
      * it could be 3rd Parties plugin css or current page custom css it self
      * 
-     * @param string|array $paths
+     * @param string|list<string> $paths
      * 
      * @return object
      */
-    public function page_css($paths) {
+    public function page_css(string|array $paths): object {
       if(!empty($paths)){
         $this->css = is_array($paths) ? $paths : [$paths];
       }
@@ -49,11 +51,11 @@
      * Function to add page js
      * it could be 3rd Parties plugin js or current page custom js it self
      * 
-     * @param string|array $paths
+     * @param string|list<string> $paths
      * 
      * @return object
      */
-    public function page_js($paths) {
+    public function page_js(string|array $paths): object {
       if(!empty($paths)){
         $this->js = is_array($paths) ? $paths : [$paths];
       }
@@ -65,11 +67,11 @@
      * Function to add some plugin css and js in header and footer
      * list plugins can be set on folder app/Config/Plugins.php
      * 
-     * @param string|array $vendor
+     * @param string|list<string> $vendor
      * 
      * @return object
      */
-    public function plugins($vendors) {
+    public function plugins(string|array $vendors): object {
       $plugins = config('Plugins');
       $vendors = !is_array($vendors) ? [$vendors] : $vendors;
       foreach ($vendors as $key => $vendor) {
@@ -90,7 +92,7 @@
      * 
      * @return object
      */
-    public function hide_content_toolbar() {
+    public function hide_content_toolbar(): object {
       $this->show_content_toolbar = false;
       return $this;
     }
@@ -102,7 +104,7 @@
      * 
      * @return object
      */
-    public function hide_breadcrums() {
+    public function hide_breadcrums(): object {
       $this->show_breadcrums = false;
       return $this;
     }
@@ -113,7 +115,7 @@
      * 
      * @return object
      */
-    public function hide_footer() {
+    public function hide_footer(): object {
       $this->show_footer = false;
       return $this;
     }
@@ -125,16 +127,24 @@
      * Use it only when you use default template
      * not a print tempate
      * 
-     * @param string|array $indexs
+     * @param string|list<string> $indexs
      * 
      * @return object
      */
-    public function hide($indexs){
-      if(!is_array($indexs)){
-        $this->$indexs = false;
+    public function hide(string|array $elements): object{
+      if(!is_array($elements)){
+        if(!in_array($elements, $this->list_elements)){
+          throw new \Exception("Element \"{$elements}\" its not on the allowed list of element to hide.");
+        }
+
+        $this->{"show_{$elements}"} = false;
       } else {
-        foreach ($indexs as $key => $index) {
-          $this->$index = false;
+        foreach ($elements as $key => $element) {
+          if(!in_array($element, $this->list_elements)){
+            throw new \Exception("Element \"{$element}\" its not on the allowed list of element to hide.");
+          }
+
+          $this->{"show_{$element}"} = false;
         }
       }
 
@@ -148,9 +158,10 @@
      * 
      * @return object
      */
-    public function tag_class($tag, $classes) {
-      if(!in_array($tag, $this->allowed_tags))
-        show_error("Tag <b>\"{$tag}\"</b> its not on the list allowed tags.");
+    public function tag_class($tag, $classes): object {
+      if(!in_array($tag, $this->allowed_tags)){
+        throw new \Exception("Tag \"{$tag}\" its not on the allowed list tags for adding class.");
+      }
 
       $this->classes[$tag] = $classes;
       return $this;
@@ -161,7 +172,7 @@
      * 
      * @return object
      */
-    public function collapse_sidebar(){
+    public function collapse_sidebar(): object {
       $this->sidebar_collapse = true;
       return $this;
     }
@@ -174,7 +185,7 @@
      * 
      * @return html
      */
-    public function render(string $view, $data = []) {
+    public function render(string $view, $data = []): string {
       $data['show'] = [
         "content-toolbar" => $this->show_content_toolbar,
         "breadcrums" => $this->show_breadcrums,
