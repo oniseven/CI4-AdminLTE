@@ -51,7 +51,7 @@ According to AdminLTE, in my opinion, there are 2 type of page.
 1. Full page that contain header, menus, sidebar, footer, and other. for example Dashboard
 2. Blank page which is didn't have any menus, sidebar, or else. for example Login and Registration page
 
-According to above, there are 2 template view in this repo,
+That is why there are 2 template view in this repo,
 1. `Default` view, which you can find in `Views/template/` as `default.php`
 2. `Blank` view, which you can find in `Views/template/` as `blank.php`
 
