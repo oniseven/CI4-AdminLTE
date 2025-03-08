@@ -234,3 +234,186 @@ $template
 Datatable library is a simple library that I create to generate data for datatables. This library only work with simple task or query, but not gonna work with really complex task or query.
 You can use `loadQuery()` method, to get the data using `sql query`, but you have to set your own filter and stuff.
 
+### Library Usage
+
+```php
+$dt = new \App\Libraries\Datatables(service('request'));
+// note: `service(request)` is mandatory
+```
+
+----
+
+## Return data format
+
+The return data format of this library will be an array like this
+
+```php
+$response = [
+  "recordsTotal" => 1000,
+  "recordsFiltered" => 500,
+  "data" => $data,
+];
+```
+
+----
+
+### Set Up Database Group
+- Method: `dbgroup()`
+
+Use this method only when you decided to use `loadQuery` instead of `loadData` method, by default it will load the `default` group.
+
+```php
+$dt->dbGroup('db_group2');
+```
+
+----
+
+### Set Columns
+- Method: `select($column, $escape)`
+
+Use this when you want to specify the column, by default it will show all column (*).
+This method accept 2 parameter:
+1. `$columns` List of the column, could be in string or an array
+2. `$escape` default is false
+
+```php
+$dt->select([
+  'id',
+  'name',
+  'address'
+]);
+
+// or 
+$dt->select('id, name, address, count(item_id) as total_item', false);
+```
+
+----
+
+### Set Joins table
+- Method: `joins($joins)`
+
+The parameter is consist of list of join array. I know, it doesn't explain anything so lets jump to the example.
+
+```php
+$dt->joins([
+  [
+    'table_2 as tb2',
+    'tb2.table_1_id = tb1.id',
+    'inner'
+  ],
+  // or you can also write it like this
+  [
+    'table' => 'table_3 as tb3',
+    'on' => 'tb3.table_2_id = tb2.id AND tb3.is_active = 1',
+    'type' => 'inner'
+  ]
+]);
+```
+
+----
+
+### Set Conditions or Filter
+- Method: `conditions($conditions)`
+
+Because this is a simpel datatables library, the filter / conditions that you can use is limited to:
+1. `where`
+2. `whereIn`
+3. `whereNotIn`
+4. `like`
+5. `orLike`
+6. `notLike`
+7. `groupBy`
+
+```php
+$dt->conditions([
+  'where' => [
+    'id' => 123,
+    'is_active' => 1
+  ],
+
+  // whereIn, whereNotIn
+  'whereIn' => [
+    [
+      'id',
+      [1, 2, 3]
+    ],
+    [
+      'column' => 'role',
+      'value' => ['admin', 'user']
+    ]
+  ],
+
+  // like, orLike, notLike
+  'like' => [
+    [
+      'name',
+      'john',
+      'both'
+    ],
+    [
+      'column' => 'name',
+      'keyword' => 'john',
+      'type' => 'both'
+    ]
+  ],
+
+  'groupBy' => 'id',
+]);
+```
+
+----
+
+### Set Searching Type
+- Method: `searchType($type)`
+
+There are 2 type of search that set for this datatables, `simple` one which is datatable default search, and `column` one which you can do search base on the column in datatable. The default value will be `simple`
+
+```php
+$dt->searchType('column');
+```
+
+----
+
+### Set Order By
+- Method: `orderBy($orders)`
+
+```php
+$dt->orderBy([
+  [
+    'id',
+    'ASC'
+  ],
+  [
+    'column' => 'id',
+    'dir' => 'DESC'
+  ]
+]);
+```
+
+----
+
+### Load the data by the configs that
+- Method: `loadData($model)`
+
+This method is to load all the data base on whatever configs that you set above. Just pass the model name class.
+
+```php
+$dt->loadData('UserModel');
+// or
+$dt->loadData('App\Models\UserModel');
+// or
+$dt->loadData(\App\Models\UserModel::class )
+```
+
+----
+
+### Load by Sql Query
+- Method: `loadQuery($sql, $binding)`
+
+You can use this method if you prefer using sql query, or you have really complex query, but you have to generate your own search proses.
+
+```php
+$dt->loadQuery('select * from users order by name ASC');
+```
+
+----
