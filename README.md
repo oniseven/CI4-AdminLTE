@@ -260,7 +260,7 @@ $response = [
 ### Set Up Database Group
 - Method: `dbgroup()`
 
-Use this method only when you decided to use `loadQuery` instead of `loadData` method, by default it will load the `default` group.
+If you need to access the table in different group, you can use this method to set the database configs group.
 
 ```php
 $dt->dbGroup('db_group2');
@@ -393,16 +393,14 @@ $dt->orderBy([
 ----
 
 ### Load the data by the configs that
-- Method: `loadData($model)`
+- Method: `loadData($table)`
 
-This method is to load all the data base on whatever configs that you set above. Just pass the model name class.
+This method is to load all the data base on whatever configs that you set above. Just pass the table name with alias if you want to.
 
 ```php
-$dt->loadData('UserModel');
+$dt->loadData('users');
 // or
-$dt->loadData('App\Models\UserModel');
-// or
-$dt->loadData(\App\Models\UserModel::class )
+$dt->loadData('users as u');
 ```
 
 ----
@@ -417,3 +415,47 @@ $dt->loadQuery('select * from users order by name ASC');
 ```
 
 ----
+
+### Examples
+
+```php
+$columns = [
+  'id', 
+  'fullname',  
+  'username', 
+  'email', 
+  'is_active'
+];
+
+$data = $dt
+  ->select($columns, false)
+  ->searchType('column')
+  ->showQuery()
+  ->showConfigs()
+  ->loadData('users as u');
+
+// or
+$columns = [
+  'u.id',
+  'u.name',
+  'us.skill'
+];
+$data = $dt
+  ->select($columns)
+  ->join([
+    [
+      "user_skils as us",
+      "us.user_id = u.id",
+      "left"
+    ]
+  ])
+  ->conditions([
+    'where' => [
+      'u.is_active' => 1
+    ],
+    'whereIn' => [
+      ['u.department_id', [3,4,6]]
+    ],
+  ])
+  ->loadData('users as u');
+```
