@@ -32,7 +32,7 @@ class Dtables extends BaseController
         ->searchType('column')
         ->showQuery()
         ->showConfigs()
-        ->loadData('UserModel');
+        ->loadData('users as u');
 
       // $data = $dt->loadQuery('select * from users order by fullname asc');
 

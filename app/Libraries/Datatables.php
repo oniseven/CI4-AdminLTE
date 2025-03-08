@@ -95,13 +95,15 @@ class Datatables implements DatatablesInterface {
     return $this;
   }
 
-  public function loadData($model): array {
+  public function loadData(string $table): array {
+    $db = \Config\Database::connect($this->db_group);
+
     // request data
     $start = $this->request->getPost('start') ?? [];
     $length = $this->request->getPost('length') ?? [];
 
     // load model
-    $builder = model($model);
+    $builder = $db->table($table);
 
     // count all data
     $recordsTotal = $builder->countAllResults();
@@ -215,7 +217,8 @@ class Datatables implements DatatablesInterface {
     }
 
     // get all data
-    $data = $builder->findAll();
+    $query = $builder->get();
+    $data = $query ? $query->getResult() : [];
 
     // build response data
     $response = [
@@ -225,7 +228,7 @@ class Datatables implements DatatablesInterface {
     ];
 
     if($this->show_query) {
-      $response['sql'] = (string) $builder->getLastQuery();
+      $response['sql'] = (string) $db->getLastQuery();
     }
 
     if($this->show_configs){

@@ -59,9 +59,9 @@ interface DatatablesInterface {
   /**
    * Method to load the data base on the configs that been set
    * 
-   * @param any $model Model name or model namespace
+   * @param string $table Table name
    */
-  public function loadData($model): array;
+  public function loadData(string $table): array;
 
   /**
    * Method to load the data using sql query
