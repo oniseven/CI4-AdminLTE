@@ -116,7 +116,11 @@ class Datatables implements DatatablesInterface {
     
     // build join table
     foreach ($this->joins as $key => $join) {
-      $builder->join($join[0], $join[1], $join[2] ?? 'inner');
+      $builder->join(
+        $join[0] ?? $join['table'], 
+        $join[1] ?? $join['on'], 
+        $join[2] ?? $join['type'] ?? 'inner'
+      );
     }
 
     // build condition
@@ -196,10 +200,13 @@ class Datatables implements DatatablesInterface {
     // count filtered result
     $recordsFiltered = $builder->countAllResults(false);
 
-    // order result
-    $orderBy = $this->setOrder();
-    if($orderBy) {
-      $builder->orderBy($orderBy[0], $orderBy[1]);
+    // set order result
+    $this->setOrder();
+    foreach ($this->orders as $key => $order) {
+      $builder->orderBy(
+        $order[0] ?? $order['column'], 
+        $order[1] ?? $order['dir'] ?? 'ASC'
+      );
     }
 
     // limit result
@@ -305,7 +312,7 @@ class Datatables implements DatatablesInterface {
     }
   }
 
-  private function setOrder(): array {
+  private function setOrder() {
     $columns = $this->request->getPost('columns') ?? [];
     $order = $this->request->getPost('order') ?? [];
 
@@ -316,9 +323,6 @@ class Datatables implements DatatablesInterface {
 
     if($columnOrderAble !== "true") { return false; }
 
-    return [
-      $orderColumnName,
-      $orderDirection
-    ];
+    $this->orders[] = [$orderColumnName, $orderDirection];
   }
 }
