@@ -19,7 +19,7 @@ class Dtables extends BaseController
     if ($this->request->isAJAX()) {
       $dt = new \App\Libraries\Datatables(service('request'));
 
-      $dt->columns = [
+      $columns = [
         'id', 
         'fullname',  
         'username', 
@@ -27,15 +27,14 @@ class Dtables extends BaseController
         'is_active'
       ];
 
-      $dt->search_type = 'column';
-      $data = $dt->loadData('UserModel');
+      $data = $dt
+        ->select($columns, false)
+        ->searchType('column')
+        ->showQuery()
+        ->showConfigs()
+        ->loadData('UserModel');
 
-      // $data = [
-      //   "recordsTotal" => 0,
-      //   "recordsFiltered" => 0,
-      //   "data" => [],
-      //   "conditions" => ''
-      // ];
+      // $data = $dt->loadQuery('select * from users order by fullname asc');
 
       return $this->response->setJSON($data);
     }

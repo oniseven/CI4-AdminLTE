@@ -2,24 +2,100 @@
 namespace App\Libraries;
 
 use CodeIgniter\HTTP\RequestInterface;
+use App\Types\DatatablesInterface;
 
-class Datatables {
-  public $columns = "*";
-  public bool $escape = false;
-  public array $joins = [];
-  public array $conditions = [];
-  public string $search_type = "simple"; // simple | column
-  public array $orders = [];
-  public bool $show_query = false;
-  public bool $show_configs = false;
+class Datatables implements DatatablesInterface {
+  /**
+   * @var string|list<string> $columns  selected column to show
+   * @var bool $escape                  escape string for selected columns
+   * @var array $joins                  list of joined table
+   * @var string $conditions            list of filtering and grouping
+   * @var string $search_type           search type of datatable, individual column search or simple search
+   * @var array $orders                 list of order
+   * @var bool $show_query              include last query data on returned result
+   * @var bool $show_configs            include configs data on returned result
+   * @var string $db_group              database group
+   * 
+   * @var RequestInterface $request
+   */
+  protected $columns = "*";
+  protected bool $escape = false;
+  protected array $joins = [];
+  protected array $conditions = [];
+  protected string $search_type = "simple"; // simple | column
+  protected array $orders = [];
+  protected bool $show_query = false;
+  protected bool $show_configs = false;
+  protected string $db_group = 'default';
 
   protected $request;
 
-  public function __construct(RequestInterface $request){
+  public function __construct(RequestInterface $request) {
     $this->request = $request;
   }
 
-  public function loadData($model, $escape = false) {
+  public function dbGroup($group): object {
+    $this->db_group = $group;
+    return $this;
+  }
+
+  public function select($columns, bool $escape = false): object {
+    if(empty($columns)){
+      throw new \Exception("Datatable selected columns cannot be empty.");
+    }
+
+    $this->columns = $columns;
+    $this->escape = $escape;
+    return $this;
+  }
+
+  public function joins(array $joins): object {
+    if(empty($joins)){
+      throw new \Exception("Datatable joins table cannot be empty.");
+    }
+
+    $this->joins = $joins;
+    return $this;
+  }
+
+  public function conditions(array $conditions): object {
+    if(empty($conditions)){
+      throw new \Exception("Datatable conditions cannot be empty.");
+    }
+
+    $this->conditions = $conditions;
+    return $this;
+  }
+
+  public function searchType(string $type): object {
+    if(empty($type)){
+      throw new \Exception("Datatable search type cannot be empty.");
+    }
+
+    if(!in_array($type, ['simple', 'column'])){
+      throw new \Exception("Datatable search type must between 'simple' or 'column' type.");
+    }
+
+    $this->search_type = $type;
+    return $this;
+  }
+
+  public function orderBy(array $orders): object {
+    $this->orders = $orders;
+    return $this;
+  }
+
+  public function showQuery(): object {
+    $this->show_query = true;
+    return $this;
+  }
+
+  public function showConfigs(): object {
+    $this->show_configs = true;
+    return $this;
+  }
+
+  public function loadData($model): array {
     // request data
     $start = $this->request->getPost('start') ?? [];
     $length = $this->request->getPost('length') ?? [];
@@ -29,7 +105,7 @@ class Datatables {
 
     // count all data
     $recordsTotal = $builder->countAllResults();
-    $builder->select($this->columns, $escape);
+    $builder->select($this->columns, $this->escape);
 
     // populate datatable search
     if($this->search_type === 'column') {
@@ -139,13 +215,35 @@ class Datatables {
       "recordsTotal" => $recordsTotal,
       "recordsFiltered" => $recordsFiltered,
       "data" => $data,
-      "conditions" => $this->conditions
+    ];
+
+    if($this->show_query) {
+      $response['sql'] = (string) $builder->getLastQuery();
+    }
+
+    if($this->show_configs){
+      $response["conditions"] = $this->conditions;
+    }
+
+    return $response;
+  }
+
+  public function loadQuery(string $sql, array $binding = []): array {
+    $db = \Config\Database::connect($this->db_group);
+
+    $query = $db->query($sql, $binding);
+    $data = $query->getResult();
+
+    $response = [
+      "recordsTotal" => 0,
+      "recordsFiltered" => count($data),
+      "data" => $data,
     ];
 
     return $response;
   }
 
-  private function simpleSearch() {
+  private function simpleSearch():void {
     // request data
     $columns = $this->request->getPost('columns') ?? [];
     $search = $this->request->getPost('search') ?? [];
@@ -164,7 +262,7 @@ class Datatables {
     }
   }
 
-  private function individualSearch() {
+  private function individualSearch(): void {
     // request data
     $columns = $this->request->getPost('columns') ?? [];
     $columnDefs = $this->request->getPost('columnDefs') ?? [];
@@ -207,7 +305,7 @@ class Datatables {
     }
   }
 
-  private function setOrder() {
+  private function setOrder(): array {
     $columns = $this->request->getPost('columns') ?? [];
     $order = $this->request->getPost('order') ?? [];
 
