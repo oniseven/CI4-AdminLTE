@@ -226,3 +226,11 @@ $template
   ->tag_class('body', 'hold-transition login-page')
   ->render('login');
 ```
+
+----
+
+## Datatables Library Usage
+
+Datatable library is a simple library that I create to generate data for datatables. This library only work with simple task or query, but not gonna work with really complex task or query.
+You can use `loadQuery()` method, to get the data using `sql query`, but you have to set your own filter and stuff.
+
