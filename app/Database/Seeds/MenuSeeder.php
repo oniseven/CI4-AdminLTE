@@ -123,7 +123,7 @@ class MenuSeeder extends Seeder
                 "position" => 'left',
                 "name" => "Privileges",
                 "slug" => "privileges",
-                "link" => 'setting/privilege',
+                "link" => 'setting/privileges',
                 "icon" => 'far fa-circle',
                 "is_last" => 1
             ],
