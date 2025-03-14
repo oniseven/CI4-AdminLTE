@@ -19,9 +19,9 @@
     }
   ?>
   <!-- Theme style -->
-  <link rel="stylesheet" href="assets/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="assets/css/adminlte.min.css">
   <!-- Custom style -->
-  <link rel="stylesheet" href="assets/dist/css/custom.css">
+  <link rel="stylesheet" href="assets/css/custom.css">
   <!-- Current Custom Page CSS -->
   <?php
     foreach ($page_css as $key => $value) {

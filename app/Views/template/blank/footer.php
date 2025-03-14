@@ -15,8 +15,8 @@
     }
   ?>
   <!-- AdminLTE App -->
-  <script src="assets/dist/js/adminlte.min.js"></script>
-  <script src="assets/dist/js/cignadlte.js"></script>
+  <script src="assets/js/adminlte.min.js"></script>
+  <script src="assets/js/cignadlte.js"></script>
   <script src="assets/plugins/custom_jquery_ajax.js"></script>
   <!-- Current Custom Page JS -->
   <?php

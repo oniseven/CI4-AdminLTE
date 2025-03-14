@@ -16,3 +16,25 @@ $routes->group('tables', static function ($routes) {
     $routes->post('datatable', 'Tables\Dtables::datatable');
   });
 });
+
+$routes->group('setting', static function ($routes) {
+  $routes->group('privileges', static function ($routes) {
+    $routes->get('', 'Setting\Privileges::index');
+    $routes->get('list', 'Setting\Privileges::list');
+    $routes->get('menus', 'Setting\Privileges::menutree');
+    
+    $routes->post('datatable', 'Setting\Privileges::datatable');
+    $routes->post('save', 'Setting\Privileges::save');
+    $routes->post('menus', 'Setting\Privileges::menus');
+
+    $routes->patch('status', 'Setting\Privileges::status');
+    $routes->delete('(:num)', 'Setting\Privileges::delete/$1');
+  });
+
+  $routes->group('user', static function ($routes) {
+    $routes->post('save', 'Setting\User::save');
+    $routes->post('datatable', 'Setting\User::datatable');
+    $routes->delete('(:num)', 'Setting\User::delete/$1');
+    $routes->patch('status', 'Setting\User::status');
+  });
+});

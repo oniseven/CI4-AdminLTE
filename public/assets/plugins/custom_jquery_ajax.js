@@ -5,6 +5,8 @@ $.cajax = function(options) {
         title: 'Please Wait !',
         html: 'Loading ...',// add html attribute if you want or remove
         allowOutsideClick: false,
+        showCancelButton: false,
+        showConfirmButton: false,
         onBeforeOpen: () => {
           Swal.showLoading()
         },

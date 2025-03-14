@@ -10,15 +10,15 @@ class ValidationService {
    * @param array $params Additional parameters (e.g., user ID for update rules).
    * @return array
    */
-  public static function getRules($entity, $action, $params = [])
+  public static function getRules($entity, $params = [])
   {
-    $validationClass = "App\\Validation\\" . ucfirst($entity) . 'Validation';
+    $validationClass = "App\\Validations\\" . ucfirst($entity) . 'Validation';
 
     if (!class_exists($validationClass)) {
       throw new \InvalidArgumentException("Validation class for entity '{$entity}' does not exist.");
     }
 
-    $method = $action . 'Rules';
+    $method = 'rules';
     if (!method_exists($validationClass, $method)) {
       throw new \InvalidArgumentException("Validation method '{$method}' does not exist in class '{$validationClass}'.");
     }
@@ -34,7 +34,7 @@ class ValidationService {
    */
   public static function getMessages($entity)
   {
-    $validationClass = "App\\Validation\\" . ucfirst($entity) . 'Validation';
+    $validationClass = "App\\Validations\\" . ucfirst($entity) . 'Validation';
 
     if (!class_exists($validationClass)) {
       throw new \InvalidArgumentException("Validation class for entity '{$entity}' does not exist.");

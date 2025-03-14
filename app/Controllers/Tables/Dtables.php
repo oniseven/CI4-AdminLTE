@@ -10,7 +10,7 @@ class Dtables extends BaseController
     return $this->template
       ->page_title('Datatables')
       ->plugins('datatables')
-      ->page_js('assets/dist/js/pages/datatables.js')
+      ->page_js('assets/js/pages/datatables.js')
       ->render('tables/datatable');
   }
 

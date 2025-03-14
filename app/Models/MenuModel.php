@@ -5,7 +5,7 @@ namespace App\Models;
 use CodeIgniter\Model;
 
 class MenuModel extends Model {
-  protected $table = 'menus';
+  protected $table = 'menus as m';
   protected $allowedFields = ['parent_id', 'position', 'name', 'slug', 'link', 'icon', 'is_last', 'is_active'];
 
   protected $useTimestamps = false;

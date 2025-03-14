@@ -3,16 +3,17 @@
 namespace App\Validations;
 
 class UserValidation {
-  public static function rules($userId = null) {
-    $uniqueUsername = $userId ? '|is_unique[users.username]' : "|is_unique[users.username, users.id, {$userId}]";
-    $uniqueEmail = $userId ? '|is_unique[users.email]' : "|is_unique[users.email, users.id, {$userId}]";
+  public static function rules($userId = null, $password = null) {
+    $uniqueUsername = $userId ? "|is_unique[users.username, users.id, {$userId}]" : '|is_unique[users.username]';
+    $uniqueEmail = $userId ? "|is_unique[users.email, users.id, {$userId}]" : '|is_unique[users.email]';
+    $additionalPasswordRules = $userId && $password ? '|min_length[6]' : '';
 
     $rules = [
-      'id' => 'numeric',
+      'id' => 'numeric|permit_empty',
       'fullname' => 'required|alpha_numeric_space',
       'username' => 'required|min_length[3]|max_length[255]'.$uniqueUsername,
       'email' => 'required|valid_email'.$uniqueEmail,
-      'password' => 'required_without(id)|min_length[6]',
+      'password' => 'required_without[id]'.$additionalPasswordRules,
       'is_active' => 'required|numeric'
     ];
 

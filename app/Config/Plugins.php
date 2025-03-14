@@ -7,12 +7,12 @@ class Plugins extends BaseConfig {
   public $datatables = [
     'css' => [
       'assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css',
-      'assets/dist/css/custom.datatables.css',
+      'assets/css/custom.datatables.css',
     ],
     'js' => [
       'assets/plugins/datatables/jquery.dataTables.min.js',
       'assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js',
-      'assets/dist/js/dtutils.js'
+      'assets/js/dtutils.js'
     ]
   ];
 
